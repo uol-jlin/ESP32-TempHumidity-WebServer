@@ -22,17 +22,10 @@ This project uses the following libraries:
 - [DHT sensor library](https://github.com/adafruit/DHT-sensor-library)
 
 ## Setup and Installation
-Assemble the hardware:
-- ESP32 to DHT22 Connection:
-  - Connect the VCC pin of the DHT22 sensor to a 3.3V pin on the ESP32.
-  - Connect the GND pin of the DHT22 to a Ground (GND) pin on the ESP32.
-  - Connect the Data pin of the DHT22 to a GPIO pin on the ESP32 (e.g., GPIO 33).
-  - Optionally, use a 10kΩ pull-up resistor between the Data pin and VCC.
-- Powering the ESP32:
-  - Use a Micro USB cable to connect the ESP32 to your computer or a USB power adapter.
+- Assemble the hardware following the ESP32 to DHT22 connection standards.
 - Install the required libraries in the Arduino IDE.
 - Upload the provided sketch to the ESP32.
-- Connect the ESP32 to your WiFi network by updating the SSID and password in the sketch.
+- Connect the ESP32 to your WiFi network by updating the SSID and password in `config.h`.
 
 ## Web Server Access
 Access the web interface by navigating to the ESP32's IP address, displayed on the serial monitor after connecting to WiFi. The interface displays real-time temperature and humidity readings.
