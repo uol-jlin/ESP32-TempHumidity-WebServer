@@ -76,30 +76,11 @@ const char index_html[] PROGMEM = R"rawliteral(
     .slider-container {
       margin: 15px 0;
     }
-    .value-span {
-      margin-left: 15px;
-      font-weight: bold;
-    }
     .alert {
       color: red;
       font-weight: bold;
       margin-top: 20px;
       display: none;
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px;
-    }
-    .close {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 10px;
-      cursor: pointer;
     }
   </style>
 </head>
@@ -144,7 +125,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         #fff; padding: 10px 40px; margin: 20px 20px;">  
         Preferences saved successfully!
       </div>
-      <div id="alertDiv" class="alert" style="color: red; font-weight: bold; margin-top: 20px; display: block;">
+      <div id="alertDiv" class="alert" style="color: black; font-weight: bold; margin-top: 20px; display: block;">
         Monitoring temperature and humidity...
       </div>
     </div>
