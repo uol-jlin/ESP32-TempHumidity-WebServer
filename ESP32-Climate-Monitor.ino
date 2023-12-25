@@ -10,7 +10,7 @@ extern const char* ssid;
 extern const char* password;
 
 // Sensor configuration
-#define DHTPIN 33    // DHT sensor pin
+#define DHTPIN 33      // DHT sensor pin
 #define DHTTYPE DHT22  // DHT 22 (AM2302)
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -35,7 +35,8 @@ String readDHTHumidity() {
 }
 
 const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html>
+<!DOCTYPE HTML>
+<html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -72,6 +73,34 @@ const char index_html[] PROGMEM = R"rawliteral(
       font-size: 1.2rem;
       color: #666;
     }
+    .slider-container {
+      margin: 15px 0;
+    }
+    .value-span {
+      margin-left: 15px;
+      font-weight: bold;
+    }
+    .alert {
+      color: red;
+      font-weight: bold;
+      margin-top: 20px;
+      display: none;
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+    }
+    .close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -83,7 +112,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       </div>
       <div class="card-body">
         <i class="fas fa-thermometer-half card-icon"></i>
-        <p id="temperature" class="d-inline">%TEMPERATURE%<sup class="units">&deg;C</sup></p>
+        <span id="temperature" class="d-inline">%TEMPERATURE%&deg;C</span>
       </div>
     </div>
     <div class="card text-center">
@@ -92,35 +121,97 @@ const char index_html[] PROGMEM = R"rawliteral(
       </div>
       <div class="card-body">
         <i class="fas fa-tint card-icon"></i>
-        <p id="humidity" class="d-inline">%HUMIDITY%<sup class="units">&percnt;</sup></p>
+        <span id="humidity" class="d-inline">%HUMIDITY%&percnt;</span>
+      </div>
+    </div>
+
+    <div class="card text-center">
+      <div class="card-header">Set Optimal Values</div>
+      <div class="card-body">
+        <div class="slider-container">
+          <label for="tempSlider">Temperature:</label>
+          <input type="range" id="tempSlider" class="slider" min="0" max="50">
+          <span id="tempSetting">25&deg;C</span>
+        </div>
+        <div class="slider-container">
+          <label for="humidSlider">Humidity:</label>
+          <input type="range" id="humidSlider" class="slider" min="0" max="100">
+          <span id="humidSetting">35&percnt;</span>
+        </div>
+        <button id="saveSettings" class="btn btn-primary">Save Preferences</button>
+      </div>
+      <div id="saveConfirmation" class="alert alert-success" style="display: none; background-color: #28a745; color:
+        #fff; padding: 10px 40px; margin: 20px 20px;">  
+        Preferences saved successfully!
+      </div>
+      <div id="alertDiv" class="alert" style="color: red; font-weight: bold; margin-top: 20px; display: block;">
+        Monitoring temperature and humidity...
       </div>
     </div>
   </div>
+
+  <script>
+    var optimalTemp = 25;
+    var optimalHumidity = 50;
+
+    const tempSettingElement = document.getElementById("tempSetting");
+    const humidSettingElement = document.getElementById("humidSetting");
+    const saveConfirmation = document.getElementById("saveConfirmation");
+
+    document.getElementById("tempSlider").oninput = function() {
+      tempSettingElement.innerHTML = this.value + '&deg;C'; 
+      optimalTemp = this.value;
+    }
+
+    document.getElementById("humidSlider").oninput = function() {
+      humidSettingElement.innerHTML = this.value + '&percnt;'; 
+      optimalHumidity = this.value;
+    }
+    document.getElementById("saveSettings").onclick = function() {
+      saveConfirmation.style.display = 'block';
+      setTimeout(function() {
+        saveConfirmation.style.display = 'none';
+      }, 3000
+      ); 
+    }
+
+    function updateAlertMessage(currentTemp, currentHumidity) {
+      if (Math.abs(currentTemp - optimalTemp) > 3 || Math.abs(currentHumidity - optimalHumidity) > 3) {
+        alertDiv.style.display = "block"; 
+        alertDiv.style.color = "red";
+        alertDiv.innerHTML = "Conditions deviating from set range!";
+      } else {
+        alertDiv.style.display = "block"; 
+        alertDiv.style.color = "green";
+        alertDiv.innerHTML = "We are in optimal conditions.";
+      }
+    }
+
+    setInterval(function() {
+      var xhttpTemp = new XMLHttpRequest();
+      xhttpTemp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          const currentTemp = parseFloat(this.responseText);
+          document.getElementById("temperature").innerHTML = currentTemp + '&deg;C';
+          updateAlertMessage(optimalTemp, currentHumidity);
+        }
+      };
+      xhttpTemp.open("GET", "/temperature", true);
+      xhttpTemp.send();
+
+      var xhttpHumidity = new XMLHttpRequest();
+      xhttpHumidity.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          const currentHumidity = parseFloat(this.responseText);
+          document.getElementById("humidity").innerHTML = currentHumidity + '&percnt;';
+          updateAlertMessage(optimalTemp, currentHumidity);
+        }
+      };
+      xhttpHumidity.open("GET", "/humidity", true);
+      xhttpHumidity.send();
+    }, 10000);
+  </script>
 </body>
-<script>
-
-setInterval(function () {
-  var xhttpTemp = new XMLHttpRequest();
-  xhttpTemp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      const currentTemp = parseFloat(this.responseText);
-      document.getElementById("temperature").innerHTML = currentTemp;
-    }
-  };
-  xhttpTemp.open("GET", "/temperature", true);
-  xhttpTemp.send();
-
-  var xhttpHumidity = new XMLHttpRequest();
-  xhttpHumidity.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      const currentHumidity = parseFloat(this.responseText);
-      document.getElementById("humidity").innerHTML = currentHumidity;
-    }
-  };
-  xhttpHumidity.open("GET", "/humidity", true);
-  xhttpHumidity.send();
-}, 10000);
-</script>
 </html>)rawliteral";
 
 String processor(const String& var) {
@@ -140,13 +231,13 @@ void setup() {
   }
   Serial.println(WiFi.localIP());
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
     request->send_P(200, "text/html", index_html, processor);
   });
-  server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest* request) {
     request->send_P(200, "text/plain", readDHTTemperature().c_str());
   });
-  server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest* request) {
     request->send_P(200, "text/plain", readDHTHumidity().c_str());
   });
 
