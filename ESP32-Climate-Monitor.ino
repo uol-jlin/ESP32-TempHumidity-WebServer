@@ -41,6 +41,7 @@ const char index_html[] PROGMEM = R"rawliteral(
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -131,6 +132,25 @@ const char index_html[] PROGMEM = R"rawliteral(
     </div>
   </div>
 
+  <div class="container">
+    <div class="card text-center">
+      <div class="card-header">
+        Temperature
+      </div>
+      <div class="card-body">
+        <canvas id="temperatureChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+    <div class="card text-center">
+      <div class="card-header">
+        Humidity
+      </div>
+      <div class="card-body">
+        <canvas id="humidityChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
   <script>
     var optimalTemp = 25;
     var optimalHumidity = 50;
@@ -168,13 +188,65 @@ const char index_html[] PROGMEM = R"rawliteral(
       }
     }
 
+    var temperatureData = [];
+    var humidityData = [];
+    var labels = [];
+
+    var tempCtx = document.getElementById('temperatureChart').getContext('2d');
+    var temperatureChart = new Chart(tempCtx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Temperature (\u00B0C)',
+          data: temperatureData,
+          borderColor: 'rgb(255, 99, 132)',
+          fill: false
+        }]
+      },
+      options: {}
+    });
+
+    var humidCtx = document.getElementById('humidityChart').getContext('2d');
+    var humidityChart = new Chart(humidCtx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Humidity (%)',
+          data: humidityData,
+          borderColor: 'rgb(54, 162, 235)',
+          fill: false
+        }]
+      },
+      options: {}
+    });  
+
+    const addData = (chart, label, data) => {
+      chart.data.labels.push(label);
+      chart.data.datasets.forEach((dataset) => {
+        dataset.data.push(data);
+      });
+      chart.update();
+    };
+
+    const getCurrentTime = () => {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes().toString().padStart(2, '0');
+      let seconds = now.getSeconds().toString().padStart(2, '0');
+      return `${hours}:${minutes}:${seconds}`;
+    };
+
     setInterval(function() {
       var xhttpTemp = new XMLHttpRequest();
       xhttpTemp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           const currentTemp = parseFloat(this.responseText);
+          const currentTime = getCurrentTime(); 
           document.getElementById("temperature").innerHTML = currentTemp + '&deg;C';
-          updateAlertMessage(optimalTemp, currentHumidity);
+          updateAlertMessage(optimalTemp, currentTemp);
+          addData(temperatureChart, currentTime, currentTemp);
         }
       };
       xhttpTemp.open("GET", "/temperature", true);
@@ -184,8 +256,10 @@ const char index_html[] PROGMEM = R"rawliteral(
       xhttpHumidity.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           const currentHumidity = parseFloat(this.responseText);
+          const currentTime = getCurrentTime(); 
           document.getElementById("humidity").innerHTML = currentHumidity + '&percnt;';
           updateAlertMessage(optimalTemp, currentHumidity);
+          addData(humidityChart, currentTime, currentHumidity);
         }
       };
       xhttpHumidity.open("GET", "/humidity", true);
