@@ -153,7 +153,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 
   <script>
     var optimalTemp = 25;
-    var optimalHumidity = 50;
+    var optimalHumidity = 35;
 
     const tempSettingElement = document.getElementById("tempSetting");
     const humidSettingElement = document.getElementById("humidSetting");
@@ -197,12 +197,20 @@ const char index_html[] PROGMEM = R"rawliteral(
       type: 'line',
       data: {
         labels: labels,
-        datasets: [{
-          label: 'Temperature (\u00B0C)',
-          data: temperatureData,
-          borderColor: 'rgb(255, 99, 132)',
-          fill: false
-        }]
+        datasets: [
+          {
+            label: 'Temperature (\u00B0C)',
+            data: temperatureData,
+            borderColor: 'rgb(255, 99, 132)',
+            fill: true
+          },
+          {
+            label: 'Optimal Temperature (\u00B0C)',
+            data: [], 
+            borderColor: 'green', 
+            fill: true
+          }
+        ]
       },
       options: {}
     });
@@ -212,21 +220,28 @@ const char index_html[] PROGMEM = R"rawliteral(
       type: 'line',
       data: {
         labels: labels,
-        datasets: [{
-          label: 'Humidity (%)',
-          data: humidityData,
-          borderColor: 'rgb(54, 162, 235)',
-          fill: false
-        }]
+        datasets: [
+          {
+            label: 'Humidity (\u0025)',
+            data: humidityData,
+            borderColor: 'rgb(54, 162, 235)',
+            fill: true
+          },
+          {
+            label: 'Optimal Humidity (\u0025)',
+            data: [], 
+            borderColor: 'green', 
+            fill: true
+          }
+        ]
       },
       options: {}
-    });  
+    });
 
-    const addData = (chart, label, data) => {
+    const addData = (chart, label, data, optimalData) => {
       chart.data.labels.push(label);
-      chart.data.datasets.forEach((dataset) => {
-        dataset.data.push(data);
-      });
+      chart.data.datasets[0].data.push(data); 
+      chart.data.datasets[1].data.push(optimalData);
       chart.update();
     };
 
@@ -246,7 +261,7 @@ const char index_html[] PROGMEM = R"rawliteral(
           const currentTime = getCurrentTime(); 
           document.getElementById("temperature").innerHTML = currentTemp + '&deg;C';
           updateAlertMessage(optimalTemp, currentTemp);
-          addData(temperatureChart, currentTime, currentTemp);
+          addData(temperatureChart, currentTime, currentTemp, optimalTemp);
         }
       };
       xhttpTemp.open("GET", "/temperature", true);
@@ -258,8 +273,8 @@ const char index_html[] PROGMEM = R"rawliteral(
           const currentHumidity = parseFloat(this.responseText);
           const currentTime = getCurrentTime(); 
           document.getElementById("humidity").innerHTML = currentHumidity + '&percnt;';
-          updateAlertMessage(optimalTemp, currentHumidity);
-          addData(humidityChart, currentTime, currentHumidity);
+          updateAlertMessage(optimalHumidity, currentHumidity);
+          addData(humidityChart, currentTime, currentHumidity, optimalHumidity);
         }
       };
       xhttpHumidity.open("GET", "/humidity", true);
