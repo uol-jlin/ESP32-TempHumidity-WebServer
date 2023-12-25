@@ -155,6 +155,9 @@ const char index_html[] PROGMEM = R"rawliteral(
     var optimalTemp = 25;
     var optimalHumidity = 35;
 
+    var currentTemp = 0;
+    var currentHumidity = 0;
+
     const tempSettingElement = document.getElementById("tempSetting");
     const humidSettingElement = document.getElementById("humidSetting");
     const saveConfirmation = document.getElementById("saveConfirmation");
@@ -176,8 +179,8 @@ const char index_html[] PROGMEM = R"rawliteral(
       ); 
     }
 
-    function updateAlertMessage(currentTemp, currentHumidity) {
-      if (Math.abs(currentTemp - optimalTemp) > 3 || Math.abs(currentHumidity - optimalHumidity) > 3) {
+    function updateAlertMessage() {
+      if (Math.abs(currentTemp - optimalTemp) > 4 || Math.abs(currentHumidity - optimalHumidity) > 4) {
         alertDiv.style.display = "block"; 
         alertDiv.style.color = "red";
         alertDiv.innerHTML = "Conditions deviating from set range!";
@@ -257,10 +260,9 @@ const char index_html[] PROGMEM = R"rawliteral(
       var xhttpTemp = new XMLHttpRequest();
       xhttpTemp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          const currentTemp = parseFloat(this.responseText);
+          currentTemp = parseFloat(this.responseText);
           const currentTime = getCurrentTime(); 
           document.getElementById("temperature").innerHTML = currentTemp + '&deg;C';
-          updateAlertMessage(optimalTemp, currentTemp);
           addData(temperatureChart, currentTime, currentTemp, optimalTemp);
         }
       };
@@ -270,10 +272,10 @@ const char index_html[] PROGMEM = R"rawliteral(
       var xhttpHumidity = new XMLHttpRequest();
       xhttpHumidity.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          const currentHumidity = parseFloat(this.responseText);
+          currentHumidity = parseFloat(this.responseText);
           const currentTime = getCurrentTime(); 
           document.getElementById("humidity").innerHTML = currentHumidity + '&percnt;';
-          updateAlertMessage(optimalHumidity, currentHumidity);
+          updateAlertMessage();
           addData(humidityChart, currentTime, currentHumidity, optimalHumidity);
         }
       };
