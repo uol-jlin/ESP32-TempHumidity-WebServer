@@ -46,66 +46,82 @@ const char index_html[] PROGMEM = R"rawliteral(
     body {
       font-family: 'Arial', sans-serif;
       background-color: #e9ecef;
-      padding-top: 20px;
-      padding-bottom: 20px;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
+
     .container {
       max-width: 900px;
-      margin: auto;
-      padding: 20px;
       background-color: #fff;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
     }
+
     .card {
       margin-bottom: 20px;
     }
+
     .card-header {
       font-size: 1.5rem;
       color: #fff;
       background-color: #007bff;
       border-radius: 5px 5px 0 0;
+      margin-bottom: 10px;
     }
+
     .card-icon {
       font-size: 48px;
       color: #007bff;
     }
-    #temperature, 
-    #humidity {
-      font-size: 1.5rem;
-    }
+
     .flex-container {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
     }
+
     .flex-item {
       flex: 1;
       min-width: 300px;
       margin: 10px;
     }
+
     .slider-container {
       background-color: #f7f7f7;
       padding: 15px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+
     .form-group {
       margin-bottom: 15px;
     }
+
     .alert {
       margin-top: 20px;
       display: none;
     }
+
     .chart-container {
       position: relative;
       height: 400px;
       margin-bottom: 30px;
     }
+
     .chart-title {
       text-align: center;
       font-size: 1.2rem;
-      margin-top: 30px;
+      margin-top: 35px;
+    }
+
+    #temperature, #humidity {
+      font-size: 24px; 
+      margin-left: 10px;
     }
   </style>
 </head>
@@ -118,7 +134,7 @@ const char index_html[] PROGMEM = R"rawliteral(
           <div class="card-header">Temperature</div>
           <div class="card-body">
             <i class="fas fa-thermometer-half card-icon"></i>
-            <span id="temperature" class="d-inline-block">%TEMPERATURE%&deg;C</span>
+            <span id="temperature" class="d-inline-block">Loading...</span>
           </div>
         </div>
       </div>
@@ -127,7 +143,7 @@ const char index_html[] PROGMEM = R"rawliteral(
           <div class="card-header">Humidity</div>
           <div class="card-body">
             <i class="fas fa-tint card-icon"></i>
-            <span id="humidity" class="d-inline-block">%HUMIDITY%&percnt;</span>
+            <span id="humidity" class="d-inline-block">Loading...</span>
           </div>
         </div>
       </div>
