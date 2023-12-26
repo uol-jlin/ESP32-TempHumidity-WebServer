@@ -47,107 +47,117 @@ const char index_html[] PROGMEM = R"rawliteral(
       font-family: 'Arial', sans-serif;
       background-color: #e9ecef;
       padding-top: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
       padding-bottom: 20px;
     }
-    .card {
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      margin-top: 20px;
     }
-    .card-icon {
-      font-size: 48px;
-      color: #017bff;
+    .card {
+      margin-bottom: 20px;
     }
     .card-header {
       font-size: 1.5rem;
       color: #fff;
-      background-color: #017bff;
+      background-color: #007bff;
+      border-radius: 5px 5px 0 0;
     }
-    .card-body {
-      font-size: 2.5rem;
-      color: #333;
+    .card-icon {
+      font-size: 48px;
+      color: #007bff;
     }
-    .units {
-      font-size: 1.2rem;
-      color: #666;
+    #temperature, 
+    #humidity {
+      font-size: 1.5rem;
+    }
+    .flex-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .flex-item {
+      flex: 1;
+      min-width: 300px;
+      margin: 10px;
     }
     .slider-container {
-      margin: 15px 0;
+      background-color: #f7f7f7;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
     }
     .alert {
-      color: red;
-      font-weight: bold;
       margin-top: 20px;
       display: none;
+    }
+    .chart-container {
+      position: relative;
+      height: 400px;
+      margin-bottom: 30px;
+    }
+    .chart-title {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2 class="text-center">ESP32 Climate Dashboard</h2>
-    <div class="card text-center">
-      <div class="card-header">
-        Temperature
+    <h2 class="text-center mb-4">ESP32 Climate Dashboard</h2>
+    <div class="flex-container">
+      <div class="flex-item">
+        <div class="card text-center">
+          <div class="card-header">Temperature</div>
+          <div class="card-body">
+            <i class="fas fa-thermometer-half card-icon"></i>
+            <span id="temperature" class="d-inline-block">%TEMPERATURE%&deg;C</span>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <i class="fas fa-thermometer-half card-icon"></i>
-        <span id="temperature" class="d-inline">%TEMPERATURE%&deg;C</span>
-      </div>
-    </div>
-    <div class="card text-center">
-      <div class="card-header">
-        Humidity
-      </div>
-      <div class="card-body">
-        <i class="fas fa-tint card-icon"></i>
-        <span id="humidity" class="d-inline">%HUMIDITY%&percnt;</span>
+      <div class="flex-item">
+        <div class="card text-center">
+          <div class="card-header">Humidity</div>
+          <div class="card-body">
+            <i class="fas fa-tint card-icon"></i>
+            <span id="humidity" class="d-inline-block">%HUMIDITY%&percnt;</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="card text-center">
-      <div class="card-header">Set Optimal Values</div>
-      <div class="card-body">
-        <div class="slider-container">
-          <label for="tempSlider">Temperature:</label>
-          <input type="range" id="tempSlider" class="slider" min="0" max="50">
-          <span id="tempSetting">25&deg;C</span>
-        </div>
-        <div class="slider-container">
-          <label for="humidSlider">Humidity:</label>
-          <input type="range" id="humidSlider" class="slider" min="0" max="100">
-          <span id="humidSetting">35&percnt;</span>
-        </div>
-        <button id="saveSettings" class="btn btn-primary">Save Preferences</button>
+    <div class="slider-container">
+      <h3 class="text-center">Set Optimal Values</h3>
+      <div class="form-group">
+        <label for="tempSlider">Temperature:</label>
+        <input type="range" id="tempSlider" class="form-control-range" min="0" max="50">
+        <span id="tempSetting" class="float-right">25&deg;C</span>
       </div>
-      <div id="saveConfirmation" class="alert alert-success" style="display: none; background-color: #28a745; color:
-        #fff; padding: 10px 40px; margin: 20px 20px;">  
-        Preferences saved successfully!
+      <div class="form-group">
+        <label for="humidSlider">Humidity:</label>
+        <input type="range" id="humidSlider" class="form-control-range" min="0" max="100">
+        <span id="humidSetting" class="float-right">35&percnt;</span>
       </div>
-      <div id="alertDiv" class="alert" style="color: black; font-weight: bold; margin-top: 20px; display: block;">
-        Monitoring temperature and humidity...
-      </div>
+      <button id="saveSettings" class="btn btn-primary btn-block">Save Preferences</button>
     </div>
-  </div>
 
-  <div class="container">
-    <div class="card text-center">
-      <div class="card-header">
-        Temperature
-      </div>
-      <div class="card-body">
-        <canvas id="temperatureChart" width="400" height="200"></canvas>
-      </div>
+    <div id="saveConfirmation" class="alert alert-success text-center">Preferences saved successfully.</div>
+    <div id="alertDiv" class="alert alert-danger text-center"></div>
+
+    <div class="chart-container">
+      <h3 class="chart-title">Temperature Chart</h3>
+      <canvas id="temperatureChart"></canvas>
     </div>
-    <div class="card text-center">
-      <div class="card-header">
-        Humidity
-      </div>
-      <div class="card-body">
-        <canvas id="humidityChart" width="400" height="200"></canvas>
-      </div>
+    <div class="chart-container">
+      <h3 class="chart-title">Humidity Chart</h3>
+      <canvas id="humidityChart"></canvas>
     </div>
   </div>
 
@@ -180,13 +190,14 @@ const char index_html[] PROGMEM = R"rawliteral(
     }
 
     function updateAlertMessage() {
+      var alertDiv = document.getElementById('alertDiv');
       if (Math.abs(currentTemp - optimalTemp) > 4 || Math.abs(currentHumidity - optimalHumidity) > 4) {
         alertDiv.style.display = "block"; 
-        alertDiv.style.color = "red";
+        alertDiv.className = "alert alert-danger text-center";
         alertDiv.innerHTML = "Conditions deviating from set range!";
       } else {
         alertDiv.style.display = "block"; 
-        alertDiv.style.color = "green";
+        alertDiv.className = "alert alert-success text-center"; 
         alertDiv.innerHTML = "We are in optimal conditions.";
       }
     }
