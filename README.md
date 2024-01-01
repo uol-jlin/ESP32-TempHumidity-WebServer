@@ -1,60 +1,56 @@
 # ESP32 Temperature and Humidity Web Server
 
 ## Project Overview
-The ESP32 Climate Monitor is an interactive IoT project that employs the ESP32 microcontroller to monitor temperature and humidity in real-time. Using a DHT22 sensor, it provides a web server interface for remote access to live sensor data, complete with real-time graphical representations.
+The ESP32 Climate Monitor is a practical IoT application that utilizes an ESP32 microcontroller to measure and monitor temperature and humidity in real-time. The system reads data from a DHT22 sensor and provides a web server interface for remote viewing.
 
 ## Features
-- Real-time monitoring of temperature and humidity with the DHT22 sensor.
-- Web server interface for remote data visualization, including real-time graphs.
-- User-specified optimal climate settings with visual feedback through an RGB LED.
-- Audible alerts via a piezo buzzer when conditions exceed the user-defined optimal range.
-- Interactive graphs for historical data visualization.
+- Real-time temperature and humidity monitoring with the DHT22 sensor.
+- Web server interface for remote access to live sensor data.
+- Visual feedback on climate conditions through an RGB LED.
+- Audible alarms with a piezo buzzer when deviations occur from the user-defined optimal range.
 
 ## Hardware Requirements
 - ESP32 Development Board
 - DHT22 Temperature and Humidity Sensor
 - RGB LED
 - Piezo Buzzer
+- Breadboard for non-direct connections
 - Jumper Wires
-- Micro USB to USB cable for programming and power
-- Resistors for LED and buzzer protection
+- Resistors for LED and buzzer
+- Power supply via micro USB
 
 ## Software and Libraries
-Required libraries for this project:
+The project requires the following libraries:
 - [Arduino IDE](https://www.arduino.cc/en/Main/Software)
 - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
 - [Adafruit_Sensor](https://github.com/adafruit/Adafruit_Sensor)
 - [DHT sensor library](https://github.com/adafruit/DHT-sensor-library)
-- [Chart.js](https://www.chartjs.org/) for real-time graphing
+
+The front end uses [Chart.js](https://www.chartjs.org/) for rendering real-time graphs.
 
 ## Setup and Installation
-1. Assemble the hardware by connecting the DHT22, RGB LED, and piezo buzzer to the ESP32.
-2. Install the Arduino IDE and necessary libraries.
-3. Upload the provided code to the ESP32.
-4. Set up the WiFi credentials in `config.h` to connect the ESP32 to the internet.
+1. Connect the DHT22, RGB LED, and piezo buzzer to the ESP32 using a breadboard for complex wiring.
+2. Install the Arduino IDE and import the necessary libraries.
+3. Load the sketch onto the ESP32 board.
+4. Configure the network settings in the provided `config.h` file or directly in the sketch.
 
 ## Web Server Access
-The web interface can be accessed through the ESP32's IP address, displayed in the serial monitor after WiFi connection. It provides the current temperature and humidity readings, real-time graphs, and allows users to set their optimal climate conditions.
+The web server can be accessed at the ESP32's IP address, which is printed to the serial monitor upon successful connection to the network.
 
 ## Optimal Climate Settings
-- Users can specify their optimal temperature and humidity settings via the web interface.
-- The predefined optimal range is visually indicated by the RGB LED: green for optimal, yellow for warning, and red for critical conditions.
-- The buzzer will sound if the readings fall outside the user-specified optimal range.
+The web interface allows users to set optimal temperature and humidity ranges. The LED color changes according to these settings: green for normal, yellow for caution, and red for high alert. The buzzer sounds when the sensor readings exceed the set thresholds.
 
 ## Real-time Graphs
-- The web interface features real-time graphs displaying temperature and humidity data.
-- Graphs update automatically, providing a visual history of environmental conditions.
+The web interface includes graphs that display historical temperature and humidity data updated in real-time.
 
 ## Future Enhancements
-- Cloud service integration for data logging and analysis.
-- OTA updates for seamless firmware upgrades.
-- Extension with more sensors for a comprehensive environmental monitoring system.
+Planned enhancements include cloud data logging, OTA firmware updates, and additional sensor support.
 
 ## Contributing
-Your contributions are welcome! Please fork the repository, make your changes, and submit a pull request. For suggestions and feedback, reach out to us.
+Contributions are welcome. Please fork the repository, commit your changes, and open a pull request.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is open-sourced under the MIT License.
 
 ## Contact
-For inquiries or suggestions, contact us at uoljlin@gmail.com.
+For any queries or feedback, please email us at uoljlin@gmail.com.
