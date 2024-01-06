@@ -331,6 +331,7 @@ const char index_html[] PROGMEM = R"rawliteral(
           const currentTime = getCurrentTime(); 
           document.getElementById("temperature").innerHTML = currentTemp + '&deg;C';
           addData(temperatureChart, currentTime, currentTemp, optimalTemp);
+          updateAlertMessage();
         }
       };
       xhttpTemp.open("GET", "/temperature", true);
@@ -343,6 +344,7 @@ const char index_html[] PROGMEM = R"rawliteral(
           const currentTime = getCurrentTime(); 
           document.getElementById("humidity").innerHTML = currentHumidity + '&percnt;';
           addData(humidityChart, currentTime, currentHumidity, optimalHumidity);
+          updateAlertMessage();
         }
       };
       xhttpHumidity.open("GET", "/humidity", true);
@@ -404,4 +406,5 @@ void setup() {
 };
 
 void loop() {
+
 }
